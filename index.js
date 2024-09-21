@@ -1,6 +1,7 @@
 import express from 'express';
 import { ApolloServer, gql } from 'apollo-server-express';
 import cors from 'cors';
+import fs from 'fs/promises';
 
 const typeDefs = gql`
    type Book {
@@ -17,52 +18,58 @@ const typeDefs = gql`
 
    type Query {
     books: [Book!]!
+    authors: [Author!]!
     author(id: ID!): Author
+   }
+
+   type Mutation {
+    addBook(title: String!, author: AuthorInput!): Book!
+    updateBook(id: ID!, title: String!, author: AuthorInput!): Book!
+   }
+
+   input AuthorInput {
+    id: ID!
+    name: String!
    }
 `
 
-const books = [
-  {
-    id: 1,
-    title: 'The Great Gatsby',
-    author: {
-      id: 'a1',
-      name: 'F. Scott Fitzgerald'
-    }
-  }, {
-    id: 2,
-    title: 'To Kill a Mockingbird',
-    author: {
-      id: 'a2',
-      name: 'Harper Lee'
-    }
-  }, {
-    id: 3,
-    title: '1984',
-    author: {
-      id: 'a3',
-      name: 'George Orwell'
-    }
-  }, {
-    id: 4,
-    title: 'Pride and Prejudice',
-    author: {
-      id: 'a4',
-      name: 'Jane Austen'
-    }
-  }, {
-    id: 5,
-    title: 'The Catcher in the Rye',
-    author: {
-      id: 'a5',
-      name: 'J.D. Salinger'
-    }
-  }
-]
+const source = JSON.parse(await fs.readFile('./books.json', 'utf8'))
+const books = source.data
+const authors = books.map(book => book.author)
 
 const resolvers = {
   Query: {
     books: () => books,
+    authors: () => authors
+  },
+  Mutation: {
+    addBook: async (parent, { title, author }) => {
+      const newBook = { 
+        id: books.length + 1, 
+        title, 
+        author: {
+          id: author.id,
+          name: author.name
+        } 
+      }
+      books.push(newBook)
+      await fs.writeFile('./books.json', JSON.stringify({ data: books }, null, 2), 'utf8')
+      return newBook
+    },
+    updateBook: async (parent, { id, title, author }) => {
+      const bookIndex = books.findIndex(book => String(book.id) === String(id))
+      if (bookIndex === -1) {
+        throw new Error('Book not found')
+      }
+      if(author !== undefined) {
+        books[bookIndex].author = {...books[bookIndex].author, ...author}
+      }
+      if(title !== undefined) {
+        books[bookIndex].title = title
+      }
+      await fs.writeFile('./books.json', JSON.stringify({ data: books }, null, 2), 'utf8')
+      return books[bookIndex]
+    }
   }
 }
 

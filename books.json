@@ -1,0 +1,52 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "title": "The Great Gatsby",
+      "author": {
+        "id": "a1",
+        "name": "F. Scott Fitzgerald"
+      }
+    },
+    {
+      "id": 2,
+      "title": "To Kill a Mockingbird",
+      "author": {
+        "id": "a2",
+        "name": "Harper Lee"
+      }
+    },
+    {
+      "id": 3,
+      "title": "1984",
+      "author": {
+        "id": "a3",
+        "name": "George Orwell"
+      }
+    },
+    {
+      "id": 4,
+      "title": "Pride and Prejudice",
+      "author": {
+        "id": "a4",
+        "name": "Jane Austen"
+      }
+    },
+    {
+      "id": 5,
+      "title": "The Catcher in the Rye",
+      "author": {
+        "id": "a5",
+        "name": "J.D. Salinger"
+      }
+    },
+    {
+      "id": 6,
+      "title": "Primeiras Estórias",
+      "author": {
+        "id": "a6",
+        "name": "Guimarães Rosa"
+      }
+    }
+  ]
+}
